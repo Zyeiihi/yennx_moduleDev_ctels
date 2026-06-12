@@ -36,14 +36,13 @@ class MemoryStorage:
 
     def list_all(self) -> List[Asset]:
         with self._lock:
-            # trả về copy để bên ngoài sửa không ảnh hưởng storage
             return list(self._data.values())
 
     def count(self) -> int:
         with self._lock:
             return len(self._data)
 
-    # ---------- Delete ----------
+    #Delete
     def delete(self, asset_id: str) -> bool:
         """Trả True nếu xóa được, False nếu id không tồn tại."""
         with self._lock:
