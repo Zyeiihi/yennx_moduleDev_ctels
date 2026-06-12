@@ -3,23 +3,23 @@ AssetService: facade gom tat ca service con (1 file/bai) lai thanh 1
 object duy nhat, de handler chi can goi service.xxx() nhu cu.
 
 Moi bai tap nam o 1 file rieng trong app/services/:
-- stats_service.py          -> Bai 1
-- batch_create_service.py    -> Bai 2
-- batch_delete_service.py    -> Bai 3
-- create_service.py          -> Bai 4
-- health_service.py          -> Bai 5
-- pagination_service.py      -> Bai 6 (bonus)
-- search_service.py          -> Bai 7 (bonus)
+- stasService.py             -> Bai 1
+- creService.py               -> Bai 2 (batch create)
+- delService.py               -> Bai 3 (batch delete)
+- concurrent_safeService.py   -> Bai 4 (create)
+- healthcheckService.py        -> Bai 5
+- pagfilterService.py          -> Bai 6 (bonus)
+- searchService.py             -> Bai 7 (bonus)
 """
 from app.storage.memory_storage import MemoryStorage
 
-from app.services.stats_service import StatsService
-from app.services.batch_create_service import BatchCreateService
-from app.services.batch_delete_service import BatchDeleteService
-from app.services.create_service import CreateService
-from app.services.health_service import HealthService
-from app.services.pagination_service import PaginationService
-from app.services.search_service import SearchService
+from app.services.stasService import StatsService
+from app.services.creService import BatchCreateService
+from app.services.delService import BatchDeleteService
+from app.services.concurrent_safeService import CreateService
+from app.services.healthcheckService import HealthService
+from app.services.pagfilterService import PaginationService
+from app.services.searchService import SearchService
 
 
 class AssetService:
