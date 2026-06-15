@@ -8,7 +8,7 @@ class SearchService:
 
     def search_by_name(self, query: str) -> list[Asset]:
         if not query:
-            raise ValueError("query 'q' không được để trống")
+            raise ValueError("query 'q' cannot empty")
 
         q_lower = query.lower()
         assets = self.storage.list_all()

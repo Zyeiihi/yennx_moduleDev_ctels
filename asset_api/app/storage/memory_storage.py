@@ -1,10 +1,3 @@
-"""
-Storage layer: lưu Asset trong memory (dict), dùng threading.Lock để
-đảm bảo an toàn khi nhiều request truy cập đồng thời (Bài 4).
-
-Tương đương sync.RWMutex trong Go, ở Python ta dùng threading.Lock.
-(uvicorn chạy nhiều worker/thread cho 1 process nên vẫn cần lock)
-"""
 import threading
 from typing import Dict, List, Optional
 

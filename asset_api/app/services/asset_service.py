@@ -1,8 +1,6 @@
 """
 AssetService: facade gom tat ca service con (1 file/bai) lai thanh 1
 object duy nhat, de handler chi can goi service.xxx() nhu cu.
-
-Moi bai tap nam o 1 file rieng trong app/services/:
 - stasService.py             -> Bai 1
 - creService.py               -> Bai 2 (batch create)
 - delService.py               -> Bai 3 (batch delete)
