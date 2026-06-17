@@ -6,8 +6,8 @@ import json
 
 def is_local_host(ip: str) -> bool:
     """
-    Yêu cầu bảo mật: CHỈ cho phép quét các dải IP nội bộ, Private hoặc Loopback
-    để tránh vi phạm pháp luật khi thực hiện Active Scan.
+    Security Requirement: ONLY allow scanning internal, private, or loopback IP ranges
+    to prevent legal violations during Active Scanning.
     """
     local_prefixes = [
         "127.", "10.", "192.168.",
@@ -18,10 +18,10 @@ def is_local_host(ip: str) -> bool:
     return any(ip.startswith(prefix) for prefix in local_prefixes) or ip == "localhost"
 
 class IPScanner:
-    """Bài 1.1: Quét Geolocation và ASN của IP public qua API miễn phí"""
+    """Task 1.1: Scan Geolocation and ASN of public IPs via a free third-party API"""
     @staticmethod
     def scan(ip_address: str) -> dict:
-        # Nếu là IP nội bộ thì không cần truy vấn bên ngoài
+        # If internal IP, return local context immediately without external queries
         if is_local_host(ip_address):
             return {
                 "ip_address": ip_address,
@@ -30,13 +30,13 @@ class IPScanner:
                 "reverse_dns": "localhost"
             }
         try:
-            # Sử dụng API công khai ip-api.com để lấy thông tin GeoIP và ASN
+            # Query ip-api.com public API for GeoIP and ASN intelligence
             url = f"http://ip-api.com/json/{ip_address}?fields=status,country,countryCode,regionName,city,lat,lon,isp,org,as"
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=5) as response:
                 data = json.loads(response.read().decode())
                 if data.get("status") == "success":
-                    # Tách chuỗi ASN (Ví dụ: "AS13335 Cloudflare, Inc." -> 13335)
+                    # Parse ASN string (e.g., "AS13335 Cloudflare, Inc." -> 13335)
                     as_info = data.get("as", "")
                     asn_num = int(as_info.split()[0].replace("AS", "")) if as_info else 0
                     
@@ -61,34 +61,34 @@ class IPScanner:
                     }
         except Exception:
             pass
-        return {"ip_address": ip_address, "error": "Không thể lấy thông tin IP"}
+        return {"ip_address": ip_address, "error": "Failed to retrieve IP information"}
 
 class PortScanner:
-    """Bài 1.2: Thiết kế công cụ Active Port Scan giới hạn trong mạng LAN/Local"""
+    """Task 1.2: Design an Active Port Scanner restricted to internal/local networks"""
     @staticmethod
     def scan(ip_address: str) -> dict:
-        # KIỂM TRA BẢO MẬT: Chặn ngay nếu người dùng cố tình quét IP bên ngoài Internet!
+        # SECURITY GUARDRAIL: Block the scan if the user attempts to scan external public internet!
         if not is_local_host(ip_address):
-            raise PermissionError("CẢNH BÁO: Chỉ được phép thực hiện Port Scan trên địa chỉ IP nội bộ/localhost!")
+            raise PermissionError("SECURITY WARNING: Active Port Scanning is only permitted on internal IP addresses or localhost!")
 
-        # Danh sách các cổng phổ biến cần kiểm tra
+        # Common target ports for discovery
         target_ports = [22, 80, 443, 5432, 8080]
         open_ports = []
         start_time = time.time()
 
-        # Dịch vụ mặc định tương ứng với từng Port
+        # Well-known service mapping
         services_map = {22: "ssh", 80: "http", 443: "https", 5432: "postgresql", 8080: "http-alt"}
 
         for port in target_ports:
-            # Tạo một TCP Socket kết nối tầm thấp
+            # Establish a low-level raw TCP stream socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(0.5) # Timeout ngắn để tăng tốc độ quét công cụ
-            result = s.connect_ex((ip_address, port)) # Trả về 0 nếu kết nối thành công (Cổng Mở)
+            s.settimeout(0.5) # Short timeout to optimize scanning velocity
+            result = s.connect_ex((ip_address, port)) # Returns 0 if connection succeeds (Port Open)
             
             if result == 0:
                 version_banner = ""
                 try:
-                    # Gửi một chuỗi nhỏ để cố gắng bốc banner thông tin phiên bản (Banner Grabbing)
+                    # Banner Grabbing: Send a lightweight payload to grab application version header
                     if port == 80:
                         s.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
                         version_banner = s.recv(100).decode('utf-8', errors='ignore').split('\r\n')[0]
@@ -100,7 +100,7 @@ class PortScanner:
                     "protocol": "tcp",
                     "state": "open",
                     "service": services_map.get(port, "unknown"),
-                    "version": version_banner if version_banner else "Phát hiện dịch vụ"
+                    "version": version_banner if version_banner else "Service detected"
                 })
             s.close()
 
@@ -114,23 +114,23 @@ class PortScanner:
         }
 
 class SSLScanner:
-    """Bài 1.3 (Bonus): Kiểm tra cấu hình mật mã TLS và chứng chỉ số SSL"""
+    """Task 1.3 (Bonus): Audit TLS cryptographic configuration and SSL/TLS digital certificate"""
     @staticmethod
     def scan(domain: str) -> dict:
         try:
-            # Tạo ngữ cảnh SSL chuẩn
+            # Create a default secure SSL context
             context = ssl.create_default_context()
             with socket.create_connection((domain, 443), timeout=4) as sock:
                 with context.wrap_socket(sock, server_hostname=domain) as ssock:
-                    # Lấy thông tin chứng chỉ và phiên bản TLS
+                    # Retrieve peer certificate metadata and active cipher suite
                     cert = ssock.getpeercert()
                     cipher = ssock.cipher()
                     
-                    # Trích xuất thông tin Subject và Issuer
+                    # Extract Subject and Issuer identity dictionaries
                     subject = dict(x[0] for x in cert.get('subject', []))
                     issuer = dict(x[0] for x in cert.get('issuer', []))
                     
-                    # Lấy danh sách SAN (Subject Alternative Names)
+                    # Extract SAN (Subject Alternative Names) list
                     san = [x[1] for x in cert.get('subjectAltName', []) if x[0] == 'DNS']
 
                     return {
@@ -150,10 +150,10 @@ class SSLScanner:
                         "grade": "A"
                     }
         except Exception as e:
-            return {"domain": domain, "error": f"Không thể lấy SSL certificate: {str(e)}"}
+            return {"domain": domain, "error": f"Failed to retrieve SSL certificate: {str(e)}"}
 
 class TechScanner:
-    """Bài 1.4 (Bonus): Phân tích HTTP Headers để nhận diện dấu vết công nghệ (Fingerprinting)"""
+    """Task 1.4 (Bonus): Analyze HTTP response headers for technology fingerprinting"""
     @staticmethod
     def scan(domain: str) -> dict:
         try:
@@ -163,7 +163,7 @@ class TechScanner:
                 headers = {k.lower(): v for k, v in response.getheaders()}
                 technologies = []
                 
-                # Fingerprinting thông qua trường Server hoặc X-Powered-By
+                # Fingerprint via 'Server' or 'X-Powered-By' metadata headers
                 server_header = headers.get('server', '')
                 if 'nginx' in server_header.lower():
                     technologies.append({"name": "nginx", "category": "Web Server", "confidence": 100})
@@ -176,10 +176,10 @@ class TechScanner:
                     "headers": headers
                 }
         except Exception as e:
-            return {"domain": domain, "error": f"Không thể nhận diện công nghệ: {str(e)}"}
+            return {"domain": domain, "error": f"Failed to fingerprint technologies: {str(e)}"}
 
 class DummyPassiveScanners:
-    """Giả lập các scan type có sẵn từ trước của hệ thống"""
+    """Simulate passive scan capabilities pre-existing in the architecture"""
     @staticmethod
     def scan_dns(target): return {"target": target, "records": {"A": ["1.1.1.1"], "MX": ["mail.example.com"]}}
     @staticmethod
@@ -187,19 +187,18 @@ class DummyPassiveScanners:
     @staticmethod
     def scan_subdomain(target): return {"target": target, "subdomains": ["www", "api", "dev"]}
 
-
 class CVEScanner:
-    """Bài 6 (Bonus): Kiểm tra các dịch vụ mở để phát hiện lỗ hổng CVE tương ứng"""
+    """Task 6 (Bonus): Correlate discovered open services with corresponding CVE vulnerabilities"""
     @staticmethod
     def check_cve(service_name: str, version: str) -> list:
-        # Giả lập cơ sở dữ liệu lỗ hổng cục bộ của CVE cho các dịch vụ cũ
+        # Mock local vulnerability database for legacy/vulnerable application signatures
         cve_database = {
             "ssh": [
-                {"cve_id": "CVE-2024-6387", "severity": "CRITICAL", "desc": "regreSSHion: RCE trong OpenSSH Server OpenBSD"},
-                {"cve_id": "CVE-2023-38408", "severity": "HIGH", "desc": "RCE qua cơ chế chuyển tiếp tác nhân SSH Agent"}
+                {"cve_id": "CVE-2024-6387", "severity": "CRITICAL", "desc": "regreSSHion: RCE in OpenSSH Server on OpenBSD"},
+                {"cve_id": "CVE-2023-38408", "severity": "HIGH", "desc": "RCE via forwarding mechanism in SSH Agent"}
             ],
             "postgresql": [
-                {"cve_id": "CVE-2024-4317", "severity": "MEDIUM", "desc": "Lỗi leo thang đặc quyền privilege escalation"}
+                {"cve_id": "CVE-2024-4317", "severity": "MEDIUM", "desc": "Privilege escalation vulnerability"}
             ]
         }
         return cve_database.get(service_name.lower(), [])

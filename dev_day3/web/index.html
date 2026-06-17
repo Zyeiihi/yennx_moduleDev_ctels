@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Mini EASM Dashboard</title>
@@ -25,35 +25,35 @@
     <hr>
     
     <div class="form-group">
-        <h3>Bước 1: Thêm Tài Sản (Asset)</h3>
-        <input type="text" id="assetName" placeholder="Ví dụ: 127.0.0.1 hoặc google.com">
+        <h3>Step 1: Add External Asset</h3>
+        <input type="text" id="assetName" placeholder="e.g., 127.0.0.1 or google.com">
         <select id="assetType">
             <option value="ip">IP Address</option>
             <option value="domain">Domain Name</option>
         </select>
-        <button onclick="addAsset()">Thêm Asset</button>
+        <button onclick="addAsset()">Add Asset</button>
     </div>
 
     <div class="form-group">
-        <h3>Bước 2: Kích Hoạt Quét Hệ Thống</h3>
-        <select id="assetSelect"><option value="">-- Chọn Asset --</option></select>
+        <h3>Step 2: Trigger Vulnerability Scan</h3>
+        <select id="assetSelect"><option value="">-- Select Asset --</option></select>
         <select id="scanType">
-            <option value="ip">Quét IP Info</option>
-            <option value="port">Quét Cổng Mở (Port Scan)</option>
-            <option value="ssl">Kiểm tra Chứng chỉ SSL</option>
-            <option value="tech">Nhận Diện Công Nghệ</option>
+            <option value="ip">Scan IP Info</option>
+            <option value="port">Port Scanning (Open Ports)</option>
+            <option value="ssl">SSL/TLS Certificate Check</option>
+            <option value="tech">Technology Detection</option>
         </select>
-        <button onclick="triggerScan()">Bắt Đầu Quét Ngầm</button>
+        <button onclick="triggerScan()">Launch Background Scan</button>
     </div>
 
-    <h3>Danh Sách Các Lần Quét (Scan Jobs)</h3>
+    <h3>Scan Jobs History</h3>
     <table>
         <thead>
             <tr>
-                <th>Mã Job</th>
-                <th>Loại Quét</th>
-                <th>Trạng Thái</th>
-                <th>Kết Quả Chi Tiết</th>
+                <th>Job ID</th>
+                <th>Scan Type</th>
+                <th>Status</th>
+                <th>Detailed Results (JSON)</th>
             </tr>
         </thead>
         <tbody id="jobTableBody"></tbody>
