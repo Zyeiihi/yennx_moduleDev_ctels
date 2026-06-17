@@ -1,0 +1,45 @@
+# ====================================================================
+# PROJECT CONFIG: .gitignore chuẩn cho Mini EASM Python Project
+# ====================================================================
+
+# 1. Hệ điều hành & Trình soạn thảo (OS & IDEs)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+Thumbs.db
+Desktop.ini
+
+# 2. Môi trường ảo Python (Python Virtual Environments)
+venv/
+.venv/
+env/
+.env/
+ENV/
+dist/
+build/
+*.egg-info/
+
+# 3. Bộ nhớ đệm Python (Python Cache files)
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 4. Docker log & dữ liệu tạm (Docker temporary runtime)
+.dockerignore
+*.log
+docker-compose.override.yml
+
+# 5. File dữ liệu / Cấu hình bảo mật cục bộ (Local configurations)
+*.pem
+*.key
+*.pub
+local_settings.py
+secrets.json

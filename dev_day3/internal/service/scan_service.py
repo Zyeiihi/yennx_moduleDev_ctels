@@ -18,7 +18,7 @@ class ScanService:
         asset = db.get_asset(job.asset_id)
         if not asset:
             job.status = "failed"
-            job.error = "Tài sản không tồn tại hoặc đã bị xóa"
+            job.error = "Asset isn't exist or be deleted"
             return
 
         target = asset.name

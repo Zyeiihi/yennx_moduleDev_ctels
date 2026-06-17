@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini EASM Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f6f9; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .form-group { margin-bottom: 15px; }
+        input, select, button { padding: 10px; font-size: 16px; margin-right: 10px; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; color: white; }
+        .bg-success { background-color: #28a745; }
+        .bg-warning { background-color: #ffc107; color: #333; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🛡️ Mini EASM Dashboard</h1>
+    <hr>
+    
+    <div class="form-group">
+        <h3>Bước 1: Thêm Tài Sản (Asset)</h3>
+        <input type="text" id="assetName" placeholder="Ví dụ: 127.0.0.1 hoặc google.com">
+        <select id="assetType">
+            <option value="ip">IP Address</option>
+            <option value="domain">Domain Name</option>
+        </select>
+        <button onclick="addAsset()">Thêm Asset</button>
+    </div>
+
+    <div class="form-group">
+        <h3>Bước 2: Kích Hoạt Quét Hệ Thống</h3>
+        <select id="assetSelect"><option value="">-- Chọn Asset --</option></select>
+        <select id="scanType">
+            <option value="ip">Quét IP Info</option>
+            <option value="port">Quét Cổng Mở (Port Scan)</option>
+            <option value="ssl">Kiểm tra Chứng chỉ SSL</option>
+            <option value="tech">Nhận Diện Công Nghệ</option>
+        </select>
+        <button onclick="triggerScan()">Bắt Đầu Quét Ngầm</button>
+    </div>
+
+    <h3>Danh Sách Các Lần Quét (Scan Jobs)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Mã Job</th>
+                <th>Loại Quét</th>
+                <th>Trạng Thái</th>
+                <th>Kết Quả Chi Tiết</th>
+            </tr>
+        </thead>
+        <tbody id="jobTableBody"></tbody>
+    </table>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
