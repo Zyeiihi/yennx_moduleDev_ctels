@@ -15,6 +15,7 @@ class Asset:
         self.id = str(uuid.uuid4())
         self.name = name
         self.type = asset_type # 'domain' hoặc 'ip'
+        self.tags = tags if tags else ["Unassigned"]
         self.created_at = datetime.utcnow().isoformat() + "Z"
 
     def to_dict(self):

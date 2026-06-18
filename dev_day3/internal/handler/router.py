@@ -6,9 +6,7 @@ from internal.service.scan_service import ScanService
 api_blueprint = Blueprint('api', __name__)
 scan_service = ScanService()
 
-# -------------------------------------------------------------
 # BÀI 3.1: CORS MIDDLEWARE THỦ CÔNG (Được kích hoạt sau mỗi Request)
-# -------------------------------------------------------------
 @api_blueprint.after_request
 def apply_cors_middleware(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -21,16 +19,20 @@ def apply_cors_middleware(response):
 def options_handler(path):
     return '', 200
 
-# -------------------------------------------------------------
 # CÁC ENDPOINT QUẢN LÝ TÀI SẢN (ASSETS)
-# -------------------------------------------------------------
 @api_blueprint.route('/assets', methods=['POST'])
 def create_asset():
     data = request.get_json() or {}
     if not data.get('name') or not data.get('type'):
         return jsonify({"error": "Vui lòng nhập đầy đủ thuộc tính name và type"}), 400
     try:
-        new_asset = Asset(data['name'], data['type'])
+        # BÀI 6.2 BONUS: Lấy mảng tags từ frontend truyền lên, mặc định là ["Production"]
+        tags = data.get('tags', ['Production'])
+        if isinstance(tags, str):  # Nếu lỡ truyền dạng chuỗi "Critical", tự chuyển thành mảng
+            tags = [tags]
+
+        # Truyền thêm trường tags vào khởi tạo Asset
+        new_asset = Asset(data['name'], data['type'], tags=tags)
         db.save_asset(new_asset)
         return jsonify(new_asset.to_dict()), 201
     except ValueError as e:
@@ -40,9 +42,7 @@ def create_asset():
 def list_assets():
     return jsonify([asset.to_dict() for asset in db.list_assets()]), 200
 
-# -------------------------------------------------------------
 # BÀI 1: API ĐIỀU HƯỚNG VÀ KIỂM TRA TRẠNG THÁI QUÉT
-# -------------------------------------------------------------
 @api_blueprint.route('/assets/<id>/scan', methods=['POST'])
 def start_scan_job(id):
     asset = db.get_asset(id)
@@ -84,3 +84,4 @@ def get_job_results(id):
 def list_scans_for_asset(id):
     jobs = db.get_jobs_by_asset(id)
     return jsonify([j.to_dict() for j in jobs]), 200
+
