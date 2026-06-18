@@ -1,25 +1,41 @@
+# FILE: app.py
+"""
+Mini ASM — Application entry point.
+Registers blueprints and serves the static frontend dashboard.
+"""
+import os
 from flask import Flask, jsonify, send_from_directory
 from internal.handler.router import api_blueprint
-import os
 
-# Cấu hình Flask nhận diện thư mục 'web' làm static folder để chứa UI
-app = Flask(__name__, static_folder='web', static_url_path='')
-
-# Đăng ký Routing Blueprint theo quy chuẩn Clean Architecture
+app = Flask(__name__, static_folder="web", static_url_path="")
 app.register_blueprint(api_blueprint)
 
-# ROUTE MỚI: Trả về file index.html khi người dùng truy cập vào trang chủ hoặc /web
-@app.route('/')
-@app.route('/web')
+
+@app.route("/")
+@app.route("/web")
 def serve_dashboard():
-    """Phục vụ file giao diện Frontend Dashboard từ thư mục web"""
-    return send_from_directory(app.static_folder, 'index.html')
+    """Serve the frontend SPA from the web/ directory."""
+    return send_from_directory(app.static_folder, "index.html")
 
-@app.route('/health', methods=['GET'])
+
+@app.route("/health", methods=["GET"])
 def health_check():
-    """Endpoint kiểm định sức khỏe phục vụ cho Docker Healthcheck"""
-    return jsonify({"status": "healthy", "service": "mini-asm-python"}), 200
+    """Health check endpoint for Docker and load balancers."""
+    db_status = "ok"
+    try:
+        from internal.storage.database import DatabaseStorage
+        DatabaseStorage()  # Will raise if DB unreachable
+    except Exception as e:
+        db_status = f"degraded: {str(e)}"
+    return jsonify({
+        "status": "healthy" if db_status == "ok" else "degraded",
+        "service": "mini-asm",
+        "db": db_status,
+    }), 200
 
-if __name__ == '__main__':
-    print("🚀 Launching Mini ASM Python System on port 8080...")
-    app.run(host='0.0.0.0', port=8080, debug=True)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+    print(f"🚀 Mini ASM starting on port {port} (debug={debug})")
+    app.run(host="0.0.0.0", port=port, debug=debug)
