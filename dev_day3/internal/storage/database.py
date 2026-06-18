@@ -65,7 +65,11 @@ class DatabaseStorage:
     # ------------------------------------------------------------------
 
     def _conn(self):
-        return _get_connection()
+        conn = _get_connection()
+        if DB_DRIVER == "sqlite":
+            import sqlite3
+            conn.row_factory = sqlite3.Row
+        return conn
 
     def _run_migrations(self):
         """
@@ -101,30 +105,80 @@ class DatabaseStorage:
         finally:
             conn.close()
 
-    def _row_to_asset(self, row) -> Asset:
-        """Convert a DB row dict/Row to an Asset object."""
-        asset = object.__new__(Asset)
-        asset.id         = row["id"]
-        asset.name       = row["name"]
-        asset.type       = row["type"]
-        asset.status     = row["status"]
-        asset.tags       = json.loads(row["tags"]) if isinstance(row["tags"], str) else row["tags"]
-        asset.created_at = row["created_at"]
-        asset.updated_at = row["updated_at"]
+    def _row_to_asset(self, row):
+        if not row:
+            return None
+        
+        # Nếu row là dict hoặc sqlite3.Row (hỗ trợ truy cập bằng tên cột)
+        if hasattr(row, "keys") or isinstance(row, dict):
+            name = row["name"]
+            asset_type = row["type"]
+            status = row["status"]
+            tags_raw = row["tags"]
+        else:
+            # Ngược lại, nếu là Tuple thuần túy, map theo thứ tự cột trong SQL up migration:
+            # id (0), name (1), type (2), status (3), tags (4), created_at (5), updated_at (6)
+            name = row[1]
+            asset_type = row[2]
+            status = row[3]
+            tags_raw = row[4]
+
+        try:
+            tags = json.loads(tags_raw) if tags_raw else ["Unassigned"]
+        except Exception:
+            tags = ["Unassigned"]
+
+        asset = Asset(name=name, asset_type=asset_type, tags=tags, status=status)
+        
+        # Gán ID và thời gian dựa trên kiểu dữ liệu
+        if hasattr(row, "keys") or isinstance(row, dict):
+            asset.id         = row["id"]
+            asset.created_at = row["created_at"]
+            asset.updated_at = row["updated_at"]
+        else:
+            asset.id         = row[0]
+            asset.created_at = row[5]
+            asset.updated_at = row[6]
+            
         return asset
 
-    def _row_to_job(self, row) -> ScanJob:
-        """Convert a DB row dict/Row to a ScanJob object."""
-        job = object.__new__(ScanJob)
-        job.id         = row["id"]
-        job.asset_id   = row["asset_id"]
-        job.scan_type  = row["scan_type"]
-        job.status     = row["status"]
-        job.started_at = row["started_at"]
-        job.ended_at   = row["ended_at"]
-        job.error      = row["error"] or ""
-        job.results    = json.loads(row["results"]) if isinstance(row["results"], str) else (row["results"] or [])
-        job.created_at = row["created_at"]
+    def _row_to_job(self, row):
+        if not row:
+            return None
+
+        if hasattr(row, "keys") or isinstance(row, dict):
+            asset_id = row["asset_id"]
+            scan_type = row["scan_type"]
+        else:
+            # map theo thứ tự cột trong table scan_jobs:
+            # id (0), asset_id (1), scan_type (2), status (3), started_at (4), ended_at (5), error (6), results (7), created_at (8)
+            asset_id = row[1]
+            scan_type = row[2]
+
+        job = ScanJob(asset_id=asset_id, scan_type=scan_type)
+
+        if hasattr(row, "keys") or isinstance(row, dict):
+            job.id         = row["id"]
+            job.status     = row["status"]
+            job.started_at = row["started_at"]
+            job.ended_at   = row["ended_at"]
+            job.error      = row["error"]
+            results_raw    = row["results"]
+            job.created_at = row["created_at"]
+        else:
+            job.id         = row[0]
+            job.status     = row[3]
+            job.started_at = row[4]
+            job.ended_at   = row[5]
+            job.error      = row[6]
+            results_raw    = row[7]
+            job.created_at = row[8]
+
+        try:
+            job.results = json.loads(results_raw) if results_raw else []
+        except Exception:
+            job.results = []
+
         return job
 
     # ------------------------------------------------------------------
