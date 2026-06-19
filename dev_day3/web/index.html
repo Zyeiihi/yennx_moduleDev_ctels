@@ -9,545 +9,630 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --white:       #ffffff;
-      --bg:          #f5f7fa;
-      --card:        #ffffff;
-      --border:      #e2e8f0;
-      --nav-bg:      #ffffff;
-      --text:        #1a202c;
-      --muted:       #718096;
-      --accent:      #3b82f6;
-      --accent-dark: #2563eb;
-      --green:       #10b981;
-      --red:         #ef4444;
-      --orange:      #f59e0b;
-      --purple:      #8b5cf6;
-      --shadow:      0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-      --shadow-md:   0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.05);
+      --bg:          #ffffff;
+      --bg-subtle:   #f6f8fa;
+      --bg-hover:    #f3f4f6;
+      --bg-inset:    #f0f0f0;
+      --border:      #d0d7de;
+      --border-muted:#e1e4e8;
+      --text:        #1f2328;
+      --text-muted:  #656d76;
+      --text-subtle: #9198a1;
+      --accent:      #1f2328;
+      --link:        #0969da;
+
+      --green-bg:    #dafbe1;
+      --green-text:  #116329;
+      --red-bg:      #ffd7d5;
+      --red-text:    #82071e;
+      --yellow-bg:   #fff8c5;
+      --yellow-text: #7d4e00;
+      --blue-bg:     #ddf4ff;
+      --blue-text:   #0550ae;
+      --purple-bg:   #fbefff;
+      --purple-text: #622cbc;
+
+      --radius-sm:   4px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
     }
 
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-           background: var(--bg); color: var(--text); min-height: 100vh; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-    /* ── NAV ── */
-    nav {
-      background: var(--nav-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      height: 56px;
+    /* ─── LAYOUT ─── */
+    .app { display: flex; min-height: 100vh; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--bg-subtle);
+      border-right: 1px solid var(--border);
       display: flex;
-      align-items: center;
-      gap: 32px;
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: var(--shadow);
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
     }
-    .nav-brand {
+    .sidebar-brand {
       display: flex; align-items: center; gap: 8px;
-      font-weight: 700; font-size: 16px; color: var(--accent);
-      text-decoration: none; margin-right: 8px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-muted);
+      font-weight: 600; font-size: 13px;
     }
-    .nav-brand i { font-size: 18px; }
-    .nav-link {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 14px; font-weight: 500; color: var(--muted);
-      cursor: pointer; padding: 6px 10px; border-radius: 6px;
-      transition: all .15s; border: none; background: none; text-decoration: none;
+    .brand-icon {
+      width: 24px; height: 24px; border-radius: 4px;
+      background: var(--text); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
     }
-    .nav-link:hover { color: var(--text); background: var(--bg); }
-    .nav-link.active { color: var(--accent); background: #eff6ff; }
+    .sidebar-section {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-muted);
+    }
+    .sidebar-section:last-child { border-bottom: none; }
+    .sidebar-label {
+      padding: 6px 12px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-subtle);
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 0;
+      border: none; background: none; width: 100%; text-align: left;
+      transition: background .1s, color .1s;
+    }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+    .nav-item.active { background: var(--bg-inset); color: var(--text); font-weight: 500; }
+    .nav-item i { width: 16px; font-size: 13px; }
+    .nav-count {
+      margin-left: auto;
+      font-size: 11px; font-weight: 500;
+      background: var(--bg-inset);
+      color: var(--text-muted);
+      padding: 1px 7px;
+      border-radius: 20px;
+      border: 1px solid var(--border-muted);
+    }
 
-    /* ── PAGES ── */
-    .page { display: none; padding: 32px; max-width: 1100px; margin: 0 auto; }
+    /* ─── MAIN CONTENT ─── */
+    .main { margin-left: 240px; flex: 1; min-width: 0; }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: var(--bg);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-title { font-weight: 600; font-size: 14px; }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ─── PAGE ─── */
+    .page { display: none; padding: 24px; }
     .page.active { display: block; }
 
-    .page-header { margin-bottom: 28px; }
-    .page-header h1 { font-size: 24px; font-weight: 700; color: var(--text); }
-    .page-header p  { font-size: 14px; color: var(--muted); margin-top: 4px; }
-
-    /* ── STAT CARDS ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px; margin-bottom: 28px;
-    }
-    .stat-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; padding: 20px 24px;
-      box-shadow: var(--shadow);
-      display: flex; justify-content: space-between; align-items: flex-start;
-    }
-    .stat-label { font-size: 13px; color: var(--muted); font-weight: 500; }
-    .stat-value { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; margin: 8px 0 4px; }
-    .stat-sub   { font-size: 12px; color: var(--muted); }
-    .stat-icon  {
-      width: 40px; height: 40px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-    }
-    .icon-blue   { background: #eff6ff; color: var(--accent); }
-    .icon-green  { background: #d1fae5; color: var(--green); }
-    .icon-orange { background: #fff7ed; color: var(--orange); }
-    .icon-purple { background: #f5f3ff; color: var(--purple); }
-
-    /* ── SCAN PANELS ── */
-    .panels-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px; margin-bottom: 28px;
-    }
-    @media(max-width: 720px) { .panels-grid { grid-template-columns: 1fr; } }
-
-    .panel {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; padding: 24px;
-      box-shadow: var(--shadow);
-    }
-    .panel-title {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 15px; font-weight: 600; margin-bottom: 12px;
-    }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-green { background: var(--green); }
-    .dot-red   { background: var(--red); }
-    .panel p { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
-    .panel ul { padding-left: 18px; }
-    .panel ul li { font-size: 13px; color: var(--text); margin-bottom: 6px; line-height: 1.5; }
-    .panel ul li strong { color: var(--text); }
-
-    .alert-warning {
-      background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
-      padding: 10px 14px; font-size: 13px; color: #92400e;
-      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-    }
-
-    .quick-start {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; padding: 24px; box-shadow: var(--shadow);
-    }
-    .quick-start h3 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
-    .qs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    @media(max-width: 600px) { .qs-steps { grid-template-columns: 1fr; } }
-    .qs-step { }
-    .qs-num {
-      width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
-      color: #fff; font-size: 13px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
-    }
-    .qs-step h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .qs-step p  { font-size: 13px; color: var(--muted); }
-
-    /* ── ASSETS PAGE ── */
-    .toolbar {
-      display: flex; gap: 10px; margin-bottom: 20px; align-items: center;
-    }
-    input[type=text], input[type=search], select {
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px 12px; font-size: 14px; background: var(--card);
-      color: var(--text); outline: none; transition: border .15s;
-    }
-    input[type=text]:focus, input[type=search]:focus, select:focus {
-      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,.1);
-    }
-    input[type=text] { flex: 1; min-width: 0; }
-
+    /* ─── BUTTONS ─── */
     .btn {
-      padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500;
-      cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px;
-      transition: all .15s; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      font-size: 13px; font-weight: 500;
+      border-radius: var(--radius-md);
+      cursor: pointer; border: 1px solid;
+      transition: background .1s;
+      white-space: nowrap;
+      line-height: 20px;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-dark); }
-    .btn-outline { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn-outline:hover { background: var(--bg); }
-    .btn-danger-sm {
-      padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;
-      cursor: pointer; border: 1px solid #fecaca; background: #fff5f5; color: var(--red);
-      transition: all .15s;
+    .btn-default {
+      background: var(--bg-subtle);
+      border-color: var(--border);
+      color: var(--text);
     }
-    .btn-danger-sm:hover { background: #fee2e2; }
+    .btn-default:hover { background: var(--bg-hover); }
+    .btn-primary {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #32383f; }
+    .btn-danger {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--red-text);
+    }
+    .btn-danger:hover { background: var(--red-bg); border-color: #f1aeb5; }
 
-    /* table */
-    .table-wrap {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; box-shadow: var(--shadow); overflow: hidden;
+    /* ─── SEARCH / INPUTS ─── */
+    .input {
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      line-height: 20px;
     }
-    table { width: 100%; border-collapse: collapse; }
-    thead th {
-      text-align: left; font-size: 12px; font-weight: 600;
-      color: var(--muted); padding: 12px 16px; text-transform: uppercase;
-      letter-spacing: .05em; background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-    tbody td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: #fafbfc; }
+    .input:focus { border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,.1); }
+    select.input { cursor: pointer; }
 
+    /* ─── STAT CARDS ─── */
+    .stats-row { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+    .stat-card { flex: 1; padding: 16px 20px; border-right: 1px solid var(--border-muted); }
+    .stat-card:last-child { border-right: none; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+    .stat-num   { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 2px; }
+    .stat-sub   { font-size: 11px; color: var(--text-subtle); }
+
+    /* ─── BADGES ─── */
     .badge {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 500;
     }
-    .badge-green  { background: #d1fae5; color: #065f46; }
-    .badge-blue   { background: #dbeafe; color: #1e40af; }
-    .badge-orange { background: #fff7ed; color: #9a3412; }
-    .badge-red    { background: #fee2e2; color: #991b1b; }
-    .badge-gray   { background: #f1f5f9; color: #475569; }
+    .badge-green  { background: var(--green-bg);  color: var(--green-text); }
+    .badge-red    { background: var(--red-bg);    color: var(--red-text); }
+    .badge-yellow { background: var(--yellow-bg); color: var(--yellow-text); }
+    .badge-blue   { background: var(--blue-bg);   color: var(--blue-text); }
+    .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
+    .badge-gray   { background: var(--bg-inset);  color: var(--text-muted); border: 1px solid var(--border-muted); }
 
-    .type-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 14px; margin-right: 8px; vertical-align: middle;
+    /* ─── TABLE ─── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      text-align: left; padding: 8px 16px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
-    .type-domain { background: #eff6ff; color: var(--accent); }
-    .type-ip     { background: #f5f3ff; color: var(--purple); }
+    .data-table td { padding: 10px 16px; border-bottom: 1px solid var(--border-muted); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--bg-subtle); }
 
-    /* empty state */
-    .empty-state {
-      text-align: center; padding: 60px 20px; color: var(--muted);
-    }
-    .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: .4; }
-    .empty-state p { font-size: 14px; }
-
-    /* modal */
-    .modal-backdrop {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.35); z-index: 200;
-      align-items: center; justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: var(--card); border-radius: 14px;
-      padding: 28px; width: 440px; max-width: 95vw;
-      box-shadow: 0 20px 60px rgba(0,0,0,.15);
-    }
-    .modal h3 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-    .field { margin-bottom: 16px; }
-    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
-    .field input, .field select { width: 100%; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-
-    /* ── SCANNING PAGE ── */
-    .scan-layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
-    @media(max-width: 780px) { .scan-layout { grid-template-columns: 1fr; } }
-
-    .scan-sidebar .panel { margin-bottom: 16px; }
-    .scan-type-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-    .scan-type-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
-      cursor: pointer; transition: all .15s; font-size: 13px;
-      background: var(--card);
-    }
-    .scan-type-item:hover { border-color: var(--accent); background: #eff6ff; }
-    .scan-type-item.selected { border-color: var(--accent); background: #eff6ff; font-weight: 500; }
-    .scan-type-item .badge { margin-left: auto; }
-
-    .scan-queue { }
-    .queue-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 14px 16px; border-bottom: 1px solid var(--border);
-      font-size: 13px;
-    }
-    .queue-item:last-child { border-bottom: none; }
-    .queue-icon {
-      width: 34px; height: 34px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
-    }
-    .queue-info { flex: 1; min-width: 0; }
-    .queue-info .qname { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .queue-info .qmeta { color: var(--muted); font-size: 12px; margin-top: 2px; }
-
-    /* ── RESULTS PAGE ── */
-    .results-filter { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-btn {
-      padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;
-      cursor: pointer; border: 1px solid var(--border); background: var(--card);
-      color: var(--muted); transition: all .15s;
-    }
-    .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .filter-btn:hover:not(.active) { background: var(--bg); color: var(--text); }
-
-    .result-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; margin-bottom: 12px; box-shadow: var(--shadow);
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       overflow: hidden;
     }
-    .result-card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; border-bottom: 1px solid var(--border);
-      cursor: pointer; user-select: none;
-    }
-    .result-card-header:hover { background: var(--bg); }
-    .result-card-header .rh-left { display: flex; align-items: center; gap: 10px; }
-    .result-card-body { padding: 16px 18px; font-size: 13px; }
-    .result-row { display: flex; gap: 16px; margin-bottom: 8px; }
-    .result-key { color: var(--muted); min-width: 120px; font-weight: 500; flex-shrink: 0; }
-    .result-val { color: var(--text); word-break: break-all; }
-    pre.result-pre {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-      padding: 12px; font-size: 12px; overflow-x: auto; white-space: pre-wrap;
-    }
 
-    .spinner { animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* ─── TOOLBAR ─── */
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .toolbar .input-search { width: 240px; }
 
-    /* Legal notice */
-    .legal-notice {
-      font-size: 11px; color: var(--muted); margin-top: 12px;
-      padding: 8px 12px; background: var(--bg); border-radius: 6px;
+    /* ─── EMPTY STATE ─── */
+    .empty {
+      padding: 60px 0; text-align: center;
+      color: var(--text-subtle); font-size: 13px;
+    }
+    .empty i { font-size: 28px; display: block; margin-bottom: 10px; opacity: .4; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.3);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg);
       border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 440px; max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-size: 14px; font-weight: 600; }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 16px; padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .modal-close:hover { background: var(--bg-hover); }
+    .modal-body { padding: 16px; }
+    .modal-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .field-group { margin-bottom: 14px; }
+    .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    .field-group .input { width: 100%; }
+
+    /* ─── DASHBOARD PANELS ─── */
+    .panels-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .panel-head { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; margin-bottom: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green { background: #1a7f37; }
+    .dot-red   { background: #d1242f; }
+    .panel p { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .check-list { list-style: none; padding: 0; }
+    .check-list li { font-size: 12px; color: var(--text); padding: 3px 0; display: flex; gap: 8px; align-items: baseline; }
+    .check-list li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; margin-top: 5px; }
+    .check-list li b { color: var(--text); font-weight: 600; }
+    .check-list li span { color: var(--text-muted); }
+
+    .callout {
+      background: var(--yellow-bg);
+      border: 1px solid #e3b341;
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--yellow-text);
+      display: flex; gap: 8px; align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    /* Quick start */
+    .qs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-muted); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .qs-cell { background: var(--bg); padding: 16px; }
+    .qs-num { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+    .qs-cell h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .qs-cell p  { font-size: 12px; color: var(--text-muted); }
+
+    /* ─── SCANNING PAGE ─── */
+    .scan-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+    .scan-config-panel { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .scan-config-head { padding: 10px 14px; background: var(--bg-subtle); border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .scan-config-body { padding: 14px; }
+    .scan-type-list { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .scan-type-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 10px;
+      border-radius: var(--radius-md);
+      cursor: pointer; font-size: 12px;
+      border: 1px solid transparent;
+      transition: all .1s;
+    }
+    .scan-type-option:hover { background: var(--bg-subtle); border-color: var(--border-muted); }
+    .scan-type-option.selected { background: var(--bg-inset); border-color: var(--border); font-weight: 500; }
+    .scan-type-option .left { display: flex; align-items: center; gap: 8px; }
+    .scan-type-option i { width: 14px; color: var(--text-muted); font-size: 12px; }
+
+    /* Job queue */
+    .job-list-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; border-bottom: 1px solid var(--border-muted);
+      font-size: 12px;
+    }
+    .job-list-item:last-child { border-bottom: none; }
+    .job-icon { width: 28px; height: 28px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+    .job-icon-pending  { background: var(--bg-inset);  color: var(--text-subtle); }
+    .job-icon-running  { background: var(--blue-bg);   color: var(--blue-text); }
+    .job-icon-done     { background: var(--green-bg);  color: var(--green-text); }
+    .job-icon-failed   { background: var(--red-bg);    color: var(--red-text); }
+    .job-meta { flex: 1; min-width: 0; }
+    .job-meta .jname { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+    .job-meta .jtype { color: var(--text-muted); margin-top: 1px; }
+
+    /* ─── RESULTS PAGE ─── */
+    .filter-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-chip {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border-muted);
+      background: var(--bg); color: var(--text-muted);
+      transition: all .1s;
+    }
+    .filter-chip:hover { border-color: var(--border); color: var(--text); }
+    .filter-chip.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+    .result-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-muted);
+      cursor: pointer;
+    }
+    .result-header:hover { background: var(--bg-hover); }
+    .result-header .rh-left { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+    .result-header .rh-meta { font-size: 11px; color: var(--text-subtle); }
+    .result-body { padding: 14px 16px; font-size: 12px; line-height: 1.7; }
+    .result-row { display: flex; gap: 16px; margin-bottom: 4px; }
+    .result-key { color: var(--text-muted); min-width: 110px; flex-shrink: 0; font-weight: 500; }
+    .result-val { color: var(--text); word-break: break-all; }
+    .code-block {
+      background: var(--bg-subtle); border: 1px solid var(--border-muted);
+      border-radius: var(--radius-md); padding: 10px 12px;
+      font-family: 'Courier New', monospace; font-size: 11px;
+      color: var(--text); overflow-x: auto; white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
+<div class="app">
 
-<!-- ───── NAV ───── -->
-<nav>
-  <a class="nav-brand" href="#">
-    <i class="fa-solid fa-shield-halved"></i>
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="font-size:11px"></i></div>
     EASM Platform
-  </a>
-  <button class="nav-link active" data-page="dashboard">
-    <i class="fa-solid fa-house"></i> Dashboard
-  </button>
-  <button class="nav-link" data-page="assets">
-    <i class="fa-solid fa-database"></i> Assets
-  </button>
-  <button class="nav-link" data-page="scanning">
-    <i class="fa-solid fa-wave-square"></i> Scanning
-  </button>
-  <button class="nav-link" data-page="results">
-    <i class="fa-solid fa-file-lines"></i> Results
-  </button>
-</nav>
-
-<!-- ───── DASHBOARD PAGE ───── -->
-<div id="page-dashboard" class="page active">
-  <div class="page-header">
-    <h1>Dashboard</h1>
-    <p>Overview of your External Attack Surface Management system</p>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">Total Assets</div>
-        <div class="stat-value" id="stat-total">0</div>
-        <div class="stat-sub" id="stat-active-sub">0 active</div>
-      </div>
-      <div class="stat-icon icon-blue"><i class="fa-solid fa-database"></i></div>
-    </div>
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">Active Assets</div>
-        <div class="stat-value" id="stat-active">0</div>
-        <div class="stat-sub">Currently monitored</div>
-      </div>
-      <div class="stat-icon icon-green"><i class="fa-solid fa-arrow-trend-up"></i></div>
-    </div>
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">Total Scans</div>
-        <div class="stat-value" id="stat-scans">0</div>
-        <div class="stat-sub">All time</div>
-      </div>
-      <div class="stat-icon icon-orange"><i class="fa-solid fa-wave-square"></i></div>
-    </div>
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">Completed Scans</div>
-        <div class="stat-value" id="stat-completed">0</div>
-        <div class="stat-sub">Successfully completed</div>
-      </div>
-      <div class="stat-icon icon-purple"><i class="fa-solid fa-file-lines"></i></div>
-    </div>
-  </div>
-
-  <div class="panels-grid">
-    <!-- Passive -->
-    <div class="panel">
-      <div class="panel-title">
-        <span class="dot dot-green"></span>
-        Passive Scanning
-      </div>
-      <p>Safe reconnaissance using publicly available information (OSINT)</p>
-      <ul>
-        <li><strong>DNS Scanning:</strong> A, AAAA, MX, NS, TXT, CNAME records</li>
-        <li><strong>WHOIS Lookup:</strong> Domain registration information</li>
-        <li><strong>Subdomain Enumeration:</strong> DNS bruteforce discovery</li>
-        <li><strong>Certificate Transparency:</strong> CT log analysis</li>
-        <li><strong>ASN Lookup:</strong> Autonomous System information</li>
-      </ul>
-    </div>
-
-    <!-- Active -->
-    <div class="panel">
-      <div class="panel-title">
-        <span class="dot dot-red"></span>
-        Active Scanning
-      </div>
-      <div class="alert-warning">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        Requires explicit authorization from target owner
-      </div>
-      <ul>
-        <li><strong>Port Scanning:</strong> TCP/UDP service discovery</li>
-        <li><strong>SSL/TLS Probing:</strong> Certificate and configuration analysis</li>
-        <li><strong>CVE Correlation:</strong> Known vulnerability matching</li>
-      </ul>
-      <p class="legal-notice">
-        <i class="fa-solid fa-scale-balanced"></i>
-        <strong>Legal Notice:</strong> Active scans may be illegal without permission. Only scan systems you own or have written authorization to test.
-      </p>
-    </div>
-  </div>
-
-  <!-- Quick Start -->
-  <div class="quick-start">
-    <h3>Quick Start</h3>
-    <div class="qs-steps">
-      <div class="qs-step">
-        <div class="qs-num">1</div>
-        <h4>Add Assets</h4>
-        <p>Start by adding domains, IPs, or services to monitor</p>
-      </div>
-      <div class="qs-step">
-        <div class="qs-num">2</div>
-        <h4>Run Scans</h4>
-        <p>Execute passive or active scans to discover your attack surface</p>
-      </div>
-      <div class="qs-step">
-        <div class="qs-num">3</div>
-        <h4>View Results</h4>
-        <p>Analyze scan results and track your security posture</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ───── ASSETS PAGE ───── -->
-<div id="page-assets" class="page">
-  <div class="page-header">
-    <h1>Assets</h1>
-    <p>Manage your monitored domains and IP addresses</p>
-  </div>
-
-  <div class="toolbar">
-    <input type="search" id="assetSearch" placeholder="Search assets…" oninput="renderAssetsTable()" />
-    <select id="assetFilterType" onchange="renderAssetsTable()">
-      <option value="">All Types</option>
-      <option value="domain">Domain</option>
-      <option value="ip">IP</option>
-    </select>
-    <button class="btn btn-primary" onclick="openAddModal()">
-      <i class="fa-solid fa-plus"></i> Add Asset
+  <div class="sidebar-section">
+    <div class="sidebar-label">Overview</div>
+    <button class="nav-item active" data-page="dashboard">
+      <i class="fa-solid fa-house"></i> Dashboard
     </button>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Asset</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Added</th>
-          <th>Scans</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="assets-tbody">
-        <tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-database"></i><p>No assets yet. Add one to get started.</p></div></td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ───── SCANNING PAGE ───── -->
-<div id="page-scanning" class="page">
-  <div class="page-header">
-    <h1>Scanning</h1>
-    <p>Execute reconnaissance scans on your assets</p>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Manage</div>
+    <button class="nav-item" data-page="assets">
+      <i class="fa-solid fa-database"></i> Assets
+      <span class="nav-count" id="nav-asset-count">0</span>
+    </button>
+    <button class="nav-item" data-page="scanning">
+      <i class="fa-solid fa-wave-square"></i> Scanning
+      <span class="nav-count" id="nav-job-count">0</span>
+    </button>
+    <button class="nav-item" data-page="results">
+      <i class="fa-solid fa-file-lines"></i> Results
+    </button>
   </div>
 
-  <div class="scan-layout">
-    <!-- sidebar -->
-    <div class="scan-sidebar">
-      <div class="panel">
-        <div class="panel-title"><i class="fa-solid fa-crosshairs" style="color:var(--accent)"></i> Configure Scan</div>
-        <div class="field">
-          <label>Target Asset</label>
-          <select id="scanAssetSelect" style="width:100%">
-            <option value="">— Select asset —</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Scan Type</label>
-          <div class="scan-type-list" id="scanTypeList"></div>
-        </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="dispatchScan()">
-          <i class="fa-solid fa-bolt"></i> Run Scan
-        </button>
-      </div>
-    </div>
-
-    <!-- job queue -->
-    <div>
-      <div class="table-wrap">
-        <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:14px;font-weight:600">Recent Jobs</span>
-          <button class="btn btn-outline" style="font-size:12px;padding:5px 10px" onclick="loadAllJobs()">
-            <i class="fa-solid fa-rotate"></i> Refresh
-          </button>
-        </div>
-        <div id="jobQueue">
-          <div class="empty-state"><i class="fa-solid fa-wave-square"></i><p>No scan jobs yet.</p></div>
-        </div>
+  <div class="sidebar-section" style="margin-top:auto">
+    <div style="padding:10px 12px">
+      <div style="font-size:11px;color:var(--text-subtle);line-height:1.5">
+        <i class="fa-solid fa-circle" style="color:#1a7f37;font-size:8px;margin-right:4px"></i>
+        API connected
       </div>
     </div>
   </div>
-</div>
+</aside>
 
-<!-- ───── RESULTS PAGE ───── -->
-<div id="page-results" class="page">
-  <div class="page-header">
-    <h1>Results</h1>
-    <p>Analyze scan findings and track your security posture</p>
-  </div>
+<!-- ─── MAIN ─── -->
+<div class="main">
 
-  <div class="results-filter" id="resultsFilter">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="dns">DNS</button>
-    <button class="filter-btn" data-filter="whois">WHOIS</button>
-    <button class="filter-btn" data-filter="ssl">SSL</button>
-    <button class="filter-btn" data-filter="port">Port</button>
-    <button class="filter-btn" data-filter="tech">Tech</button>
-    <button class="filter-btn" data-filter="cve">CVE</button>
-  </div>
-
-  <div id="resultsContainer">
-    <div class="empty-state"><i class="fa-solid fa-file-lines"></i><p>No completed scan results yet.</p></div>
-  </div>
-</div>
-
-<!-- ───── ADD ASSET MODAL ───── -->
-<div class="modal-backdrop" id="addModal">
-  <div class="modal">
-    <h3>Add New Asset</h3>
-    <div class="field">
-      <label>Asset Name / Address</label>
-      <input type="text" id="modalAssetName" placeholder="e.g. example.com or 192.168.1.1" />
-    </div>
-    <div class="field">
-      <label>Asset Type</label>
-      <select id="modalAssetType">
-        <option value="domain">Domain</option>
-        <option value="ip">IP Address</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeAddModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitAddAsset()">
+  <!-- ─── DASHBOARD ─── -->
+  <div id="topbar-dashboard" class="topbar">
+    <span class="topbar-title">Dashboard</span>
+    <div class="topbar-actions">
+      <button class="btn btn-default" onclick="navigateTo('assets')">
         <i class="fa-solid fa-plus"></i> Add Asset
       </button>
+    </div>
+  </div>
+  <div id="page-dashboard" class="page active">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total assets</div>
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-sub">registered</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active assets</div>
+        <div class="stat-num" id="stat-active">0</div>
+        <div class="stat-sub">currently monitored</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total scans</div>
+        <div class="stat-num" id="stat-scans">0</div>
+        <div class="stat-sub">all time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-num" id="stat-completed">0</div>
+        <div class="stat-sub">successfully finished</div>
+      </div>
+    </div>
+
+    <div class="panels-row">
+      <div class="panel">
+        <div class="panel-head"><span class="dot dot-green"></span> Passive scanning</div>
+        <p>Safe reconnaissance using publicly available information (OSINT)</p>
+        <ul class="check-list">
+          <li><b>DNS scanning</b> <span>A, AAAA, MX, NS, TXT, CNAME records</span></li>
+          <li><b>WHOIS lookup</b> <span>Domain registration information</span></li>
+          <li><b>Subdomain enumeration</b> <span>Certificate transparency logs</span></li>
+          <li><b>Tech fingerprinting</b> <span>HTTP header analysis</span></li>
+          <li><b>GeoIP &amp; ASN</b> <span>Autonomous system information</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><span class="dot dot-red"></span> Active scanning</div>
+        <div class="callout">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Requires explicit authorization from target owner</span>
+        </div>
+        <ul class="check-list">
+          <li><b>Port scanning</b> <span>TCP service discovery (local IPs only)</span></li>
+          <li><b>SSL/TLS probing</b> <span>Certificate and config analysis</span></li>
+          <li><b>CVE correlation</b> <span>Known vulnerability matching</span></li>
+        </ul>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-muted);font-size:11px;color:var(--text-subtle)">
+          Active scans may be illegal without permission. Only scan systems you own or have written authorization to test.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em">Quick start</div>
+    <div class="qs-grid">
+      <div class="qs-cell">
+        <div class="qs-num">1</div>
+        <h4>Add assets</h4>
+        <p>Add domains, IPs, or services to monitor</p>
+      </div>
+      <div class="qs-cell">
+        <div class="qs-num">2</div>
+        <h4>Run scans</h4>
+        <p>Execute passive or active scans on your targets</p>
+      </div>
+      <div class="qs-cell">
+        <div class="qs-num">3</div>
+        <h4>View results</h4>
+        <p>Analyze findings and track your security posture</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ASSETS ─── -->
+  <div id="topbar-assets" class="topbar" style="display:none">
+    <span class="topbar-title">Assets</span>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="fa-solid fa-plus"></i> New asset
+      </button>
+    </div>
+  </div>
+  <div id="page-assets" class="page">
+    <div class="toolbar">
+      <input type="search" class="input input-search" id="assetSearch" placeholder="Search assets…" oninput="renderAssetsTable()" />
+      <select class="input" id="assetFilterType" onchange="renderAssetsTable()">
+        <option value="">All types</option>
+        <option value="domain">Domain</option>
+        <option value="ip">IP</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Added</th>
+            <th>Scans</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="assets-tbody">
+          <tr><td colspan="6"><div class="empty"><i class="fa-solid fa-database"></i>No assets yet.</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── SCANNING ─── -->
+  <div id="topbar-scanning" class="topbar" style="display:none">
+    <span class="topbar-title">Scanning</span>
+    <div class="topbar-actions">
+      <button class="btn btn-default" onclick="loadAllJobs()">
+        <i class="fa-solid fa-rotate"></i> Refresh
+      </button>
+    </div>
+  </div>
+  <div id="page-scanning" class="page">
+    <div class="scan-layout">
+      <div>
+        <div class="scan-config-panel">
+          <div class="scan-config-head">Configure scan</div>
+          <div class="scan-config-body">
+            <div class="field-group">
+              <label class="field-label">Target asset</label>
+              <select class="input" id="scanAssetSelect" style="width:100%">
+                <option value="">— Select asset —</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Scan type</label>
+              <div class="scan-type-list" id="scanTypeList"></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="dispatchScan()">
+              <i class="fa-solid fa-bolt"></i> Run scan
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:32px"></th>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Started</th>
+              </tr>
+            </thead>
+            <tbody id="job-tbody">
+              <tr><td colspan="5"><div class="empty"><i class="fa-solid fa-wave-square"></i>No scan jobs yet.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RESULTS ─── -->
+  <div id="topbar-results" class="topbar" style="display:none">
+    <span class="topbar-title">Results</span>
+  </div>
+  <div id="page-results" class="page">
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="dns">DNS</button>
+      <button class="filter-chip" data-filter="whois">WHOIS</button>
+      <button class="filter-chip" data-filter="subdomain">Subdomains</button>
+      <button class="filter-chip" data-filter="ssl">SSL/TLS</button>
+      <button class="filter-chip" data-filter="tech">Tech</button>
+      <button class="filter-chip" data-filter="ip">GeoIP</button>
+      <button class="filter-chip" data-filter="port">Ports</button>
+      <button class="filter-chip" data-filter="cve">CVE</button>
+    </div>
+    <div id="resultsContainer">
+      <div class="empty"><i class="fa-solid fa-file-lines"></i>No completed results yet.</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ─── ADD ASSET MODAL ─── -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>New asset</h3>
+      <button class="modal-close" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Name / address</label>
+        <input type="text" class="input" id="modalAssetName" placeholder="e.g. example.com or 10.0.0.1" style="width:100%" />
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label">Type</label>
+        <select class="input" id="modalAssetType" style="width:100%">
+          <option value="domain">Domain</option>
+          <option value="ip">IP address</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddAsset()">Add asset</button>
     </div>
   </div>
 </div>
