@@ -1,8 +1,4 @@
 # FILE: app.py
-"""
-Mini ASM — Application entry point.
-Registers blueprints and serves the static frontend dashboard.
-"""
 import os
 from flask import Flask, jsonify, send_from_directory
 from internal.handler.router import api_blueprint

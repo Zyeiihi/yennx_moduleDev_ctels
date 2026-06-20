@@ -103,35 +103,41 @@ pytest test/test_scanners.py -v
 ## Project Structure
 
 ```
-.
+. 
 ├── app.py                          # Entry point
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml              # Full stack (postgres + nginx)
-├── nginx.conf                      # Reverse proxy config
+├── requirements.txt                # Python dependencies
+├── Dockerfile                      # Multi-stage Docker build
+├── docker-compose.yml              # Full stack (postgres + backend + nginx)
+├── nginx.conf                      # Reverse proxy & security headers config
 ├── .env.example                    # Environment variables template
+├── .gitignore                      # Git ignore rules
 ├── migrations/
-│   ├── 001_create_assets.up.sql    # Schema creation
+│   ├── 001_create_assets.up.sql    # Schema creation (PostgreSQL/SQLite)
 │   └── 001_create_assets.down.sql  # Schema rollback
 ├── internal/
-│   ├── model/asset.py              # Asset & ScanJob models
+│   ├── model/
+│   │   └── asset.py                # Asset & ScanJob models
 │   ├── storage/
-│   │   ├── database.py             # SQLite/PostgreSQL storage
-│   │   └── memory.py               # In-memory storage (tests)
+│   │   ├── database.py             # SQLite/PostgreSQL storage driver
+│   │   └── memory.py               # In-memory storage (baseline/tests)
 │   ├── service/
-│   │   ├── scanners.py             # Scanner implementations
-│   │   └── scan_service.py         # Background scan orchestration
-│   └── handler/router.py           # Flask routes
+│   │   ├── analyzer.py             # Compare historical results (Delta/Diff)
+│   │   ├── scanners.py             # Scanner implementations & Security guards
+│   │   └── scan_service.py         # Background scan thread orchestration
+│   └── handler/
+│       └── router.py               # Flask API endpoints routing
 ├── web/
-│   ├── index.html                  # Frontend dashboard
-│   └── app.js                      # Frontend JavaScript
+│   ├── index.html                  # Frontend SPA dashboard
+│   └── app.js                      # Frontend Vanilla JavaScript logic
 ├── test/
-│   ├── test_model.py               # Model validation tests
-│   ├── test_storage.py             # Storage layer tests
-│   ├── test_scanners.py            # Scanner unit tests
-│   ├── test_service.py             # Service layer tests (mock)
-│   └── test_handler.py             # Handler tests (Flask test client)
-└── .github/workflows/ci.yml        # CI/CD pipeline
+│   ├── test_model.py               # Model validation unit tests
+│   ├── test_storage.py             # Storage layer unit tests
+│   ├── test_scanners.py            # Scanner & security checks unit tests
+│   ├── test_service.py             # Service background thread tests
+│   └── test_handler.py             # API route tests via Flask test_client
+└── .github/
+    └── workflows/
+        └── ci.yml                  # GitHub Actions CI/CD pipeline (Lint, Test, Trivy)
 ```
 
 ---

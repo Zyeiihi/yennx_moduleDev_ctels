@@ -43,3 +43,5 @@ docker-compose.override.yml
 *.pub
 local_settings.py
 secrets.json
+DEPLOYMENT.md
+FINAL_REVIEW.md
