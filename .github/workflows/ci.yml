@@ -139,7 +139,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: dev_day3        
           push: false
           tags: mini-asm:${{ github.sha }}
           cache-from: type=gha
