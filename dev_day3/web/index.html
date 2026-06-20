@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EASM Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #ffffff;
+      --bg-subtle:   #f6f8fa;
+      --bg-hover:    #f3f4f6;
+      --bg-inset:    #f0f0f0;
+      --border:      #d0d7de;
+      --border-muted:#e1e4e8;
+      --text:        #1f2328;
+      --text-muted:  #656d76;
+      --text-subtle: #9198a1;
+      --accent:      #1f2328;
+      --link:        #0969da;
+
+      --green-bg:    #dafbe1;
+      --green-text:  #116329;
+      --red-bg:      #ffd7d5;
+      --red-text:    #82071e;
+      --yellow-bg:   #fff8c5;
+      --yellow-text: #7d4e00;
+      --blue-bg:     #ddf4ff;
+      --blue-text:   #0550ae;
+      --purple-bg:   #fbefff;
+      --purple-text: #622cbc;
+
+      --radius-sm:   4px;
+      --radius-md:   6px;
+      --radius-lg:   8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── LAYOUT ─── */
+    .app { display: flex; min-height: 100vh; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--bg-subtle);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      overflow-y: auto;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 8px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-muted);
+      font-weight: 600; font-size: 13px;
+    }
+    .brand-icon {
+      width: 24px; height: 24px; border-radius: 4px;
+      background: var(--text); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+    .sidebar-section {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-muted);
+    }
+    .sidebar-section:last-child { border-bottom: none; }
+    .sidebar-label {
+      padding: 6px 12px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-subtle);
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 0;
+      border: none; background: none; width: 100%; text-align: left;
+      transition: background .1s, color .1s;
+    }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+    .nav-item.active { background: var(--bg-inset); color: var(--text); font-weight: 500; }
+    .nav-item i { width: 16px; font-size: 13px; }
+    .nav-count {
+      margin-left: auto;
+      font-size: 11px; font-weight: 500;
+      background: var(--bg-inset);
+      color: var(--text-muted);
+      padding: 1px 7px;
+      border-radius: 20px;
+      border: 1px solid var(--border-muted);
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    .main { margin-left: 240px; flex: 1; min-width: 0; }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: var(--bg);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-title { font-weight: 600; font-size: 14px; }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ─── PAGE ─── */
+    .page { display: none; padding: 24px; }
+    .page.active { display: block; }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      font-size: 13px; font-weight: 500;
+      border-radius: var(--radius-md);
+      cursor: pointer; border: 1px solid;
+      transition: background .1s;
+      white-space: nowrap;
+      line-height: 20px;
+    }
+    .btn-default {
+      background: var(--bg-subtle);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-default:hover { background: var(--bg-hover); }
+    .btn-primary {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #32383f; }
+    .btn-danger {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--red-text);
+    }
+    .btn-danger:hover { background: var(--red-bg); border-color: #f1aeb5; }
+
+    /* ─── SEARCH / INPUTS ─── */
+    .input {
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      line-height: 20px;
+    }
+    .input:focus { border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,.1); }
+    select.input { cursor: pointer; }
+
+    /* ─── STAT CARDS ─── */
+    .stats-row { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+    .stat-card { flex: 1; padding: 16px 20px; border-right: 1px solid var(--border-muted); }
+    .stat-card:last-child { border-right: none; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 6px; }
+    .stat-num   { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1; margin-bottom: 2px; }
+    .stat-sub   { font-size: 11px; color: var(--text-subtle); }
+
+    /* ─── BADGES ─── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 500;
+    }
+    .badge-green  { background: var(--green-bg);  color: var(--green-text); }
+    .badge-red    { background: var(--red-bg);    color: var(--red-text); }
+    .badge-yellow { background: var(--yellow-bg); color: var(--yellow-text); }
+    .badge-blue   { background: var(--blue-bg);   color: var(--blue-text); }
+    .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
+    .badge-gray   { background: var(--bg-inset);  color: var(--text-muted); border: 1px solid var(--border-muted); }
+
+    /* ─── TABLE ─── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      text-align: left; padding: 8px 16px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .data-table td { padding: 10px 16px; border-bottom: 1px solid var(--border-muted); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--bg-subtle); }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* ─── TOOLBAR ─── */
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .toolbar .input-search { width: 240px; }
+
+    /* ─── EMPTY STATE ─── */
+    .empty {
+      padding: 60px 0; text-align: center;
+      color: var(--text-subtle); font-size: 13px;
+    }
+    .empty i { font-size: 28px; display: block; margin-bottom: 10px; opacity: .4; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.3);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 440px; max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-size: 14px; font-weight: 600; }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 16px; padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .modal-close:hover { background: var(--bg-hover); }
+    .modal-body { padding: 16px; }
+    .modal-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .field-group { margin-bottom: 14px; }
+    .field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    .field-group .input { width: 100%; }
+
+    /* ─── DASHBOARD PANELS ─── */
+    .panels-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .panel-head { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; margin-bottom: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green { background: #1a7f37; }
+    .dot-red   { background: #d1242f; }
+    .panel p { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .check-list { list-style: none; padding: 0; }
+    .check-list li { font-size: 12px; color: var(--text); padding: 3px 0; display: flex; gap: 8px; align-items: baseline; }
+    .check-list li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; margin-top: 5px; }
+    .check-list li b { color: var(--text); font-weight: 600; }
+    .check-list li span { color: var(--text-muted); }
+
+    .callout {
+      background: var(--yellow-bg);
+      border: 1px solid #e3b341;
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--yellow-text);
+      display: flex; gap: 8px; align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    /* Quick start */
+    .qs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-muted); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .qs-cell { background: var(--bg); padding: 16px; }
+    .qs-num { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+    .qs-cell h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .qs-cell p  { font-size: 12px; color: var(--text-muted); }
+
+    /* ─── SCANNING PAGE ─── */
+    .scan-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+    .scan-config-panel { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .scan-config-head { padding: 10px 14px; background: var(--bg-subtle); border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .scan-config-body { padding: 14px; }
+    .scan-type-list { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .scan-type-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 10px;
+      border-radius: var(--radius-md);
+      cursor: pointer; font-size: 12px;
+      border: 1px solid transparent;
+      transition: all .1s;
+    }
+    .scan-type-option:hover { background: var(--bg-subtle); border-color: var(--border-muted); }
+    .scan-type-option.selected { background: var(--bg-inset); border-color: var(--border); font-weight: 500; }
+    .scan-type-option .left { display: flex; align-items: center; gap: 8px; }
+    .scan-type-option i { width: 14px; color: var(--text-muted); font-size: 12px; }
+
+    /* Job queue */
+    .job-list-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; border-bottom: 1px solid var(--border-muted);
+      font-size: 12px;
+    }
+    .job-list-item:last-child { border-bottom: none; }
+    .job-icon { width: 28px; height: 28px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+    .job-icon-pending  { background: var(--bg-inset);  color: var(--text-subtle); }
+    .job-icon-running  { background: var(--blue-bg);   color: var(--blue-text); }
+    .job-icon-done     { background: var(--green-bg);  color: var(--green-text); }
+    .job-icon-failed   { background: var(--red-bg);    color: var(--red-text); }
+    .job-meta { flex: 1; min-width: 0; }
+    .job-meta .jname { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+    .job-meta .jtype { color: var(--text-muted); margin-top: 1px; }
+
+    /* ─── RESULTS PAGE ─── */
+    .filter-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-chip {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border-muted);
+      background: var(--bg); color: var(--text-muted);
+      transition: all .1s;
+    }
+    .filter-chip:hover { border-color: var(--border); color: var(--text); }
+    .filter-chip.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+    .result-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-muted);
+      cursor: pointer;
+    }
+    .result-header:hover { background: var(--bg-hover); }
+    .result-header .rh-left { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+    .result-header .rh-meta { font-size: 11px; color: var(--text-subtle); }
+    .result-body { padding: 14px 16px; font-size: 12px; line-height: 1.7; }
+    .result-row { display: flex; gap: 16px; margin-bottom: 4px; }
+    .result-key { color: var(--text-muted); min-width: 110px; flex-shrink: 0; font-weight: 500; }
+    .result-val { color: var(--text); word-break: break-all; }
+    .code-block {
+      background: var(--bg-subtle); border: 1px solid var(--border-muted);
+      border-radius: var(--radius-md); padding: 10px 12px;
+      font-family: 'Courier New', monospace; font-size: 11px;
+      color: var(--text); overflow-x: auto; white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon"><i class="fa-solid fa-shield-halved" style="font-size:11px"></i></div>
+    EASM Platform
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Overview</div>
+    <button class="nav-item active" data-page="dashboard">
+      <i class="fa-solid fa-house"></i> Dashboard
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Manage</div>
+    <button class="nav-item" data-page="assets">
+      <i class="fa-solid fa-database"></i> Assets
+      <span class="nav-count" id="nav-asset-count">0</span>
+    </button>
+    <button class="nav-item" data-page="scanning">
+      <i class="fa-solid fa-wave-square"></i> Scanning
+      <span class="nav-count" id="nav-job-count">0</span>
+    </button>
+    <button class="nav-item" data-page="results">
+      <i class="fa-solid fa-file-lines"></i> Results
+    </button>
+  </div>
+
+  <div class="sidebar-section" style="margin-top:auto">
+    <div style="padding:10px 12px">
+      <div style="font-size:11px;color:var(--text-subtle);line-height:1.5">
+        <i class="fa-solid fa-circle" style="color:#1a7f37;font-size:8px;margin-right:4px"></i>
+        API connected
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+
+  <!-- ─── DASHBOARD ─── -->
+  <div id="topbar-dashboard" class="topbar">
+    <span class="topbar-title">Dashboard</span>
+    <div class="topbar-actions">
+      <button class="btn btn-default" onclick="navigateTo('assets')">
+        <i class="fa-solid fa-plus"></i> Add Asset
+      </button>
+    </div>
+  </div>
+  <div id="page-dashboard" class="page active">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total assets</div>
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-sub">registered</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active assets</div>
+        <div class="stat-num" id="stat-active">0</div>
+        <div class="stat-sub">currently monitored</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total scans</div>
+        <div class="stat-num" id="stat-scans">0</div>
+        <div class="stat-sub">all time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-num" id="stat-completed">0</div>
+        <div class="stat-sub">successfully finished</div>
+      </div>
+    </div>
+
+    <div class="panels-row">
+      <div class="panel">
+        <div class="panel-head"><span class="dot dot-green"></span> Passive scanning</div>
+        <p>Safe reconnaissance using publicly available information (OSINT)</p>
+        <ul class="check-list">
+          <li><b>DNS scanning</b> <span>A, AAAA, MX, NS, TXT, CNAME records</span></li>
+          <li><b>WHOIS lookup</b> <span>Domain registration information</span></li>
+          <li><b>Subdomain enumeration</b> <span>Certificate transparency logs</span></li>
+          <li><b>Tech fingerprinting</b> <span>HTTP header analysis</span></li>
+          <li><b>GeoIP &amp; ASN</b> <span>Autonomous system information</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><span class="dot dot-red"></span> Active scanning</div>
+        <div class="callout">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Requires explicit authorization from target owner</span>
+        </div>
+        <ul class="check-list">
+          <li><b>Port scanning</b> <span>TCP service discovery (local IPs only)</span></li>
+          <li><b>SSL/TLS probing</b> <span>Certificate and config analysis</span></li>
+          <li><b>CVE correlation</b> <span>Known vulnerability matching</span></li>
+        </ul>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-muted);font-size:11px;color:var(--text-subtle)">
+          Active scans may be illegal without permission. Only scan systems you own or have written authorization to test.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em">Quick start</div>
+    <div class="qs-grid">
+      <div class="qs-cell">
+        <div class="qs-num">1</div>
+        <h4>Add assets</h4>
+        <p>Add domains, IPs, or services to monitor</p>
+      </div>
+      <div class="qs-cell">
+        <div class="qs-num">2</div>
+        <h4>Run scans</h4>
+        <p>Execute passive or active scans on your targets</p>
+      </div>
+      <div class="qs-cell">
+        <div class="qs-num">3</div>
+        <h4>View results</h4>
+        <p>Analyze findings and track your security posture</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ASSETS ─── -->
+  <div id="topbar-assets" class="topbar" style="display:none">
+    <span class="topbar-title">Assets</span>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="fa-solid fa-plus"></i> New asset
+      </button>
+    </div>
+  </div>
+  <div id="page-assets" class="page">
+    <div class="toolbar">
+      <input type="search" class="input input-search" id="assetSearch" placeholder="Search assets…" oninput="renderAssetsTable()" />
+      <select class="input" id="assetFilterType" onchange="renderAssetsTable()">
+        <option value="">All types</option>
+        <option value="domain">Domain</option>
+        <option value="ip">IP</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Added</th>
+            <th>Scans</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="assets-tbody">
+          <tr><td colspan="6"><div class="empty"><i class="fa-solid fa-database"></i>No assets yet.</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── SCANNING ─── -->
+  <div id="topbar-scanning" class="topbar" style="display:none">
+    <span class="topbar-title">Scanning</span>
+    <div class="topbar-actions">
+      <button class="btn btn-default" onclick="loadAllJobs()">
+        <i class="fa-solid fa-rotate"></i> Refresh
+      </button>
+    </div>
+  </div>
+  <div id="page-scanning" class="page">
+    <div class="scan-layout">
+      <div>
+        <div class="scan-config-panel">
+          <div class="scan-config-head">Configure scan</div>
+          <div class="scan-config-body">
+            <div class="field-group">
+              <label class="field-label">Target asset</label>
+              <select class="input" id="scanAssetSelect" style="width:100%">
+                <option value="">— Select asset —</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Scan type</label>
+              <div class="scan-type-list" id="scanTypeList"></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="dispatchScan()">
+              <i class="fa-solid fa-bolt"></i> Run scan
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:32px"></th>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Started</th>
+              </tr>
+            </thead>
+            <tbody id="job-tbody">
+              <tr><td colspan="5"><div class="empty"><i class="fa-solid fa-wave-square"></i>No scan jobs yet.</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RESULTS ─── -->
+  <div id="topbar-results" class="topbar" style="display:none">
+    <span class="topbar-title">Results</span>
+  </div>
+  <div id="page-results" class="page">
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="dns">DNS</button>
+      <button class="filter-chip" data-filter="whois">WHOIS</button>
+      <button class="filter-chip" data-filter="subdomain">Subdomains</button>
+      <button class="filter-chip" data-filter="ssl">SSL/TLS</button>
+      <button class="filter-chip" data-filter="tech">Tech</button>
+      <button class="filter-chip" data-filter="ip">GeoIP</button>
+      <button class="filter-chip" data-filter="port">Ports</button>
+      <button class="filter-chip" data-filter="cve">CVE</button>
+    </div>
+    <div id="resultsContainer">
+      <div class="empty"><i class="fa-solid fa-file-lines"></i>No completed results yet.</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ─── ADD ASSET MODAL ─── -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>New asset</h3>
+      <button class="modal-close" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label class="field-label">Name / address</label>
+        <input type="text" class="input" id="modalAssetName" placeholder="e.g. example.com or 10.0.0.1" style="width:100%" />
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label">Type</label>
+        <select class="input" id="modalAssetType" style="width:100%">
+          <option value="domain">Domain</option>
+          <option value="ip">IP address</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddAsset()">Add asset</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
