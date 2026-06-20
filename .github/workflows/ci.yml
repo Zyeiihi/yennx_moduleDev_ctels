@@ -114,7 +114,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
-          scan-ref: .
+          scan-ref: dev_day3
           format: table
           exit-code: 0     # Don't block builds, just report
           severity: CRITICAL,HIGH
