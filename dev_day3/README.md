@@ -1,31 +1,6 @@
-# 🔍 Mini ASM — External Attack Surface Management Tool
+# Quick Start
 
-A Python/Flask EASM tool for discovering and monitoring assets (domains and IPs).
-
-## Features
-
-- **Asset Management** — Add, list, and delete domains/IP assets
-- **Scan Types** — DNS, WHOIS, Subdomain enumeration, SSL/TLS audit, Tech fingerprinting, IP GeoIP, Port scan (local only), CVE correlation
-- **Persistent Storage** — SQLite (dev) or PostgreSQL (production)
-- **Frontend Dashboard** — Built-in dark-themed web UI
-- **REST API** — Full JSON API
-- **Docker support** — Single-command full-stack deployment
-
----
-
-## Quick Start
-
-### Option A — SQLite (no database setup needed)
-```bash
-pip install -r requirements.txt
-
-# Run server
-python app.py
-
-# Open browser at http://localhost:8080
-```
-
-### Option B — Docker Compose (PostgreSQL + Nginx)
+## Docker Compose (PostgreSQL + Nginx)
 ```bash
 cp .env.example .env   # Edit passwords if desired
 docker compose up -d
@@ -33,56 +8,6 @@ docker compose up -d
 # API:      http://localhost/health
 ```
 
----
-
-## Environment Variables
-
-| Variable       | Default       | Description                     |
-|----------------|---------------|---------------------------------|
-| `DB_DRIVER`    | `sqlite`      | `sqlite` or `postgres`          |
-| `SQLITE_PATH`  | `./mini_asm.db` | SQLite file path              |
-| `DB_HOST`      | `localhost`   | PostgreSQL host                 |
-| `DB_PORT`      | `5432`        | PostgreSQL port                 |
-| `DB_USER`      | `postgres`    | PostgreSQL user                 |
-| `DB_PASSWORD`  | `postgres`    | PostgreSQL password             |
-| `DB_NAME`      | `mini_asm`    | Database name                   |
-| `PORT`         | `8080`        | Flask server port               |
-| `FLASK_DEBUG`  | `false`       | Enable debug mode               |
-
----
-
-## API Endpoints
-
-| Method | Endpoint                      | Description                       |
-|--------|-------------------------------|-----------------------------------|
-| GET    | `/health`                     | Health check                      |
-| POST   | `/assets`                     | Create asset                      |
-| GET    | `/assets`                     | List all assets                   |
-| GET    | `/assets/{id}`                | Get asset by ID                   |
-| DELETE | `/assets/{id}`                | Delete asset                      |
-| POST   | `/assets/{id}/scan`           | Start scan job                    |
-| GET    | `/assets/{id}/scans`          | List all scans for asset          |
-| GET    | `/assets/{id}/results`        | Get all results for asset         |
-| GET    | `/assets/{id}/dns`            | Latest DNS results                |
-| GET    | `/assets/{id}/whois`          | Latest WHOIS results              |
-| GET    | `/assets/{id}/subdomains`     | Latest subdomain results          |
-| GET    | `/scan-jobs/{id}`             | Get scan job status               |
-| GET    | `/scan-jobs/{id}/results`     | Get scan job results              |
-
-### Scan Types
-| `scan_type`  | Description                          | Safe for public IPs |
-|--------------|--------------------------------------|---------------------|
-| `dns`        | DNS record lookup (A, MX, NS, TXT)   | ✅ Yes              |
-| `whois`      | WHOIS registration data              | ✅ Yes              |
-| `subdomain`  | Subdomain enumeration via crt.sh     | ✅ Yes              |
-| `ssl`        | TLS certificate analysis             | ✅ Yes              |
-| `tech`       | HTTP tech fingerprinting             | ✅ Yes              |
-| `ip`         | GeoIP & ASN lookup                   | ✅ Yes              |
-| `port`       | TCP port scan (**local IPs only**)   | ⚠️ Local only       |
-| `cve`        | CVE vulnerability correlation        | ✅ Yes              |
-| `all`        | All passive scans combined           | ✅ Yes              |
-
----
 
 ## Running Tests
 
@@ -139,13 +64,3 @@ pytest test/test_scanners.py -v
     └── workflows/
         └── ci.yml                  # GitHub Actions CI/CD pipeline (Lint, Test, Trivy)
 ```
-
----
-
-## Security Notes
-
-- Port scanning is **restricted to private/localhost IP ranges** (RFC 1918)
-- CORS is configured to allow all origins (suitable for development; restrict in production)
-- No authentication required (add JWT/API key middleware for production)
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for cloud deployment instructions.

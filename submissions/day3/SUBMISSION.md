@@ -57,3 +57,40 @@ Kết quả báo "fail" và field error báo lỗi, chỉ có thể scan port lo
 ![alt text](image-15.png)
 
 ## Bài 4: Tích hợp front-end 
+![Giao diện chính](image-16.png)
+
+![Giao diện Asset](image-17.png)
+![Thêm Asset](image-20.png)
+![Asset được thêm lưu vào danh sách](image-21.png)
+![Xóa Asset](image-22.png)
+![Asset được xóa thành công](image-23.png)
+
+![Giao diện Scan](image-18.png)
+
+![Giao diện Result](image-19.png)
+
+## Bài 5: CICD 
+
+![CI running](image.png)
+
+![CI pipeline](image-4.png)
+
+![Scan result](image-5.png)
+
+## Bài 6: Docker Compose Deploy
+![docker-compose ps](image-24.png)
+![frontend access localhost:3000](image-25.png)
+![health check passing](image-26.png)
+
+
+# Bài 7: EASM new function
+
+
+## Bài 8: Cloud VM
+
+
+## Bài 9: Domain & TLS/HTTPS 
+
+
+
+## Bài 10: Auto Deploy on Merge 
